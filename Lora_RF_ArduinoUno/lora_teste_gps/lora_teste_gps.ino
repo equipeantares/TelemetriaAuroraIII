@@ -2,15 +2,15 @@
 #include <TinyGPS.h>
 #include <EBYTE.h>
 
-#define RX_LORA 16 // Pino RX do módulo LoRa
-#define TX_LORA 17 // Pino TX do módulo LoRa
+#define RX_LORA 3 // Pino RX do módulo LoRa
+#define TX_LORA 2 // Pino TX do módulo LoRa
 
 SoftwareSerial lora(RX_LORA, TX_LORA);
 
 // Defina os pinos M0, M1 e AUX de acordo com a pinagem do ESP32
-#define M0_LORA 5
-#define M1_LORA 18
-#define AUX_LORA 19
+#define M0_LORA 11
+#define M1_LORA 12
+#define AUX_LORA 4
 
 EBYTE LoRa(&lora, M0_LORA, M1_LORA, AUX_LORA);
 
@@ -74,16 +74,21 @@ void loop() {
 
 void leGPS() {
   unsigned long delayGPS = millis();
+  unsigned long lastRead = millis();
+  Serial.println("entrou func");
 
   serialGPS.listen();
   bool lido = false;
-  while ((millis() - delayGPS) < 500) {
-    while (serialGPS.available()) {
-      char cIn = serialGPS.read();
-      lido = gps.encode(cIn);
-    }
+  while ((millis() - delayGPS) < 10000)
+    if ((millis() - lastRead) < 500) {
+      while (serialGPS.available()) {
+        Serial.println("verifc");
+        char cIn = serialGPS.read();
+        lido = gps.encode(cIn);
+      }
 
     if (lido) {
+      Serial.println("leu");
       float flat, flon;
       unsigned long age;
 
