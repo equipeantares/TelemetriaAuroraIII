@@ -62,43 +62,45 @@ void loop() {
 
   if ((millis() - delayLeGPS) > 10000) {
     leGPS();
+    
     delayLeGPS = millis();
   }
 
+  //if (Serial.available()>0){
   if (Serial.available()>0){
-  String msg = urlMapa;
-  lora.print(msg);
-  Serial.println(msg);
+    String msg = urlMapa;
+    lora.print(msg);
+    Serial.println(msg);
   }
+  
+
 }
 
 void leGPS() {
   unsigned long delayGPS = millis();
   unsigned long lastRead = millis();
-  Serial.println("entrou func");
 
   serialGPS.listen();
   bool lido = false;
-  while ((millis() - delayGPS) < 10000)
-    if ((millis() - lastRead) < 500) {
-      while (serialGPS.available()) {
-        Serial.println("verifc");
-        char cIn = serialGPS.read();
-        lido = gps.encode(cIn);
+  while ((millis() - delayGPS) < 500) {
+      while (serialGPS.available()) {  
+      char cIn = serialGPS.read();
+      lido = gps.encode(cIn);
       }
 
     if (lido) {
-      Serial.println("leu");
+      //Serial.println("leu");
       float flat, flon;
       unsigned long age;
 
       gps.f_get_position(&flat, &flon, &age);
 
-      urlMapa = "Local Identificado: https://maps.google.com/maps/?&z=10&q=";
+      // urlMapa = "Local Identificado: https://maps.google.com/maps/?&z=10&q=";
+      urlMapa = "";
       urlMapa += String(flat, 6);
       urlMapa += ",";
       urlMapa += String(flon, 6);
-      Serial.println(urlMapa);
+      //Serial.println(urlMapa);
 
       break;
     }

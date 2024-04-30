@@ -169,7 +169,9 @@ void leGPS() {
   while ((millis() - delayGPS) < 500) {
     while (serialGPS.available()) {
       char cIn = serialGPS.read();
+      Serial.println(cIn);
       lido = gps.encode(cIn);
+      Serial.println(lido);
     }
 
     if (lido) {
