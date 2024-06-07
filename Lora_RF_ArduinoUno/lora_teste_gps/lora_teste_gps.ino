@@ -16,20 +16,22 @@ EBYTE LoRa(&lora, M0_LORA, M1_LORA, AUX_LORA);
 
 SoftwareSerial serialGPS(6, 7);
 
-TinyGPS gps;
+TinyGPS gps; 
 
 String urlMapa;
+
+bool lido = false;
 
 void leGPS();
 
 void setup() {
 
   Serial.begin(9600);
-  serialGPS.begin(9600);
-
   Serial.println("Sketch Iniciado!");
+
+  serialGPS.begin(9600);
   
-  while (!Serial);
+  //while (!Serial);
 
   lora.begin(9600);
   LoRa.init();
@@ -66,11 +68,11 @@ void loop() {
     delayLeGPS = millis();
   }
 
-  //if (Serial.available()>0){
-  if (Serial.available()>0){
-    String msg = urlMapa;
-    lora.print(msg);
-    Serial.println(msg);
+  if (lido){
+  //  String msg = urlMapa;
+    lora.print(urlMapa);
+    Serial.println(urlMapa);
+    lido = false;
   }
   
 
@@ -81,12 +83,11 @@ void leGPS() {
   unsigned long lastRead = millis();
 
   serialGPS.listen();
-  bool lido = false;
   while ((millis() - delayGPS) < 500) {
-      while (serialGPS.available()) {  
+    while (serialGPS.available()) {  
       char cIn = serialGPS.read();
       lido = gps.encode(cIn);
-      }
+    }
 
     if (lido) {
       //Serial.println("leu");
@@ -100,7 +101,9 @@ void leGPS() {
       urlMapa += String(flat, 6);
       urlMapa += ",";
       urlMapa += String(flon, 6);
-      //Serial.println(urlMapa);
+      Serial.println(urlMapa);
+      //lora.listen();
+      //lora.print(urlMapa);
 
       break;
     }
